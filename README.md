@@ -1,187 +1,267 @@
-TP3-DAR2025 – Serveur Multi-threads : Sockets en mode connecté TCP
+# 🌐 TP3-DAR2025 – Serveur Multi-threads : Sockets TCP
 
-🧾 Informations sur le projet
+> Implémentation d'un serveur multi-threads Java avec gestion de connexions concurrentes et service de calculatrice distribué
 
-Auteur : Hsan Khecharem
+---
 
-Filière : Licence en Sciences de l'Informatique
+## 📋 Informations du projet
 
-Spécialité : Génie Logiciel et Systèmes d'Information
+| Élément | Détail |
+|---------|--------|
+| **Auteur** | Hsan Khecharem |
+| **Filière** | Licence en Sciences de l'Informatique |
+| **Spécialité** | Génie Logiciel et Systèmes d'Information |
+| **Institution** | Faculté des Sciences de Sfax |
+| **Thématique** | Architecture Client/Serveur avec gestion concurrente |
 
-Faculté : Faculté des Sciences de Sfax
+---
 
-Projet : Client/Serveur – Gestion simultanée de plusieurs connexions via Threads et service de calculatrice
+## 🎯 Objectifs pédagogiques
 
-🎯 Objectif du TP
+Ce projet vise à maîtriser les concepts avancés de programmation réseau et concurrente en Java :
 
-Ce TP a pour but de concevoir un serveur multi-thread en Java capable de gérer plusieurs clients connectés simultanément à l'aide de sockets TCP.
-L'activité met en pratique les notions de concurrence, de communication réseau, de gestion des threads et de synchronisation dans le cadre d'applications réparties.
-L'objectif principal est d'étendre le modèle Client/Serveur développé dans les TP précédents pour :
+- **Programmation multi-threads** : Gestion simultanée de plusieurs clients
+- **Sockets TCP** : Communication fiable en mode connecté
+- **Synchronisation** : Protection des ressources partagées contre les accès concurrents
+- **Sérialisation Java** : Échange d'objets entre processus distants
+- **Architecture répartie** : Conception d'applications distribuées robustes
 
-Permettre à plusieurs clients d'échanger des messages en parallèle avec un même serveur (Activité 3-1)
-Implémenter un service de calculatrice avec échange d'objets sérialisés et gestion d'accès concurrent (Activité 3-2)
+### Extension du modèle Client/Serveur
 
+- ✅ Support de connexions multiples en parallèle
+- ✅ Service de calculatrice avec objets sérialisés
+- ✅ Gestion d'accès concurrent avec synchronisation
 
+---
 
-💻 Environnement de développement
+## 🛠️ Environnement technique
 
-Langage : Java
+```
+Langage       : Java
+Version JDK   : 1.8+
+IDE           : IntelliJ IDEA
+Protocole     : TCP/IP (Sockets)
+Test réseau   : Telnet (Activité 3-1)
+```
 
-JDK : 1.8 
+---
 
-IDE : IntelliJ IDEA 
+## 📂 Structure du projet
 
-Outil réseau (test) : Telnet (Activité 3-1 uniquement)
+### Activité 3-1 : Serveur Multi-threads de base
 
-🧠 Description des activités
+**Composants principaux :**
 
-Activité 3-1 : Serveur Multi-thread de base
+**`MultiThreadServer`**
+- Écoute sur le port `1234`
+- Accepte les connexions via `ServerSocket.accept()`
+- Crée un thread dédié par client
+- Affiche l'adresse IP et le numéro d'ordre de chaque connexion
 
-Étape 1 – Préparation du projet
+**`ClientProcess extends Thread`**
+- Gère la communication avec un client spécifique
+- Envoie un message de bienvenue personnalisé
+- Traite les messages en mode écho
+- Ferme proprement la connexion sur commande `quit`
 
-Création du projet TP3 et du dossier de travail personnel
-Mise en place des classes de base pour le serveur et le client à partir du squelette du TP2
+---
 
-Étape 2 – Serveur Multi-threads
+### Activité 3-2 : Calculatrice distribuée avec synchronisation
 
-Développement de la classe MultiThreadServer :
+**Architecture du service :**
 
-Le serveur écoute sur le port 1234
-Chaque nouvelle connexion client est acceptée via ServerSocket.accept()
-Un nouveau thread (ClientProcess) est créé pour gérer chaque client de manière indépendante
-Le serveur affiche l'adresse IP du client et son numéro d'ordre de connexion
+**`MultiThreadCalculatorServer`**
+- Port d'écoute : `6000`
+- Gestion de connexions multiples simultanées
+- Création d'un `CalculatorClientHandler` par client
+- Compteur global synchronisé des opérations
 
-La classe ClientProcess :
+**`CalculatorClientProcess extends Thread`**
+- Communication par objets sérialisés (`ObjectInputStream`/`ObjectOutputStream`)
+- Opérations supportées : `+`, `-`, `*`, `/`
+- Gestion des erreurs (division par zéro, opérateur invalide)
+- Sessions multi-opérations par client
+- Incrémentation synchronisée du compteur global
 
-Hérite de Thread
-Gère la communication avec un client donné
-Envoie un message de bienvenue et traite les messages reçus
-Ferme proprement la connexion lorsque le client envoie quit
+**`Operation implements Serializable`**
+```java
+class Operation {
+    private double op1;
+    private double op2;
+    private String operator;
+    // Getters...
+}
+```
 
-Étape 3 – Tests en réseau
+**`CalculatorClient`**
+- Interface interactive en console
+- Création et envoi d'objets `Operation`
+- Réception et affichage des résultats
+- Support de sessions multi-requêtes
 
-Les tests ont été effectués :
-En local (localhost) avec plusieurs instances de client Java et avec Telnet
-En réseau local (LAN) entre plusieurs machines :
+---
 
-La machine serveur a été configurée en réseau privé
-Le pare-feu Windows a été ajusté pour autoriser les connexions entrantes sur le port 1234
-Les clients ont utilisé l'adresse IPv4 du serveur (ex. 192.168.1.10) via InetAddress et InetSocketAddress
-Les connexions multiples ont été correctement gérées : chaque client a reçu son numéro d'ordre, et les échanges étaient indépendants
+## 🔒 Gestion de la synchronisation
 
+### Problématique
+Plusieurs threads accèdent simultanément à une ressource partagée (`totalOperations`), créant un risque de **race condition**.
 
-Activité 3-2 : Serveur Calculatrice Multi-thread avec synchronisation
+### Solution implémentée
+```java
+private static int totalOperations = 0;
 
-Étape 1 – Préparation de l'espace de travail
+private synchronized void incrementOperationCount() {
+    totalOperations++;
+    System.out.println("Total operations: " + totalOperations);
+}
+```
 
-Extension du serveur multi-thread de l'Activité 3-1
-Intégration du service de calculatrice développé dans le TP2 Activité 2-2
+### Tests de validation
+- ✅ 5 clients simultanés effectuant plusieurs opérations
+- ✅ Cohérence parfaite du compteur (aucune perte)
+- ✅ Tests en réseau local multi-machines
 
-Étape 2 – Création du serveur multi-thread pour le service de calculatrice
+---
 
-Développement de la classe MultiThreadCalculatorServer :
+## 🧪 Tests et validation
 
-Le serveur écoute sur le port 6000
-Accepte plusieurs connexions clientes simultanées
-Crée un thread dédié (CalculatorClientHandler) pour chaque client
-Affiche l'adresse IP locale et le port au démarrage
-Gère un compteur global des opérations traitées
+### Configuration réseau locale (LAN)
 
-La classe CalculatorClientProcess :
+**Serveur**
+- Configuration en réseau privé
+- Pare-feu Windows ajusté (port `1234` et `6000` autorisés)
+- Adresse IPv4 exemple : `192.168.1.10`
 
-Hérite de Thread
-Gère la communication avec un client spécifique via objets sérialisés
-Utilise ObjectInputStream et ObjectOutputStream
-Traite les 4 opérations arithmétiques : +, -, *, /
-Gère les erreurs : division par zéro, opérateur invalide
-Permet plusieurs opérations par session client
-Incrémente le compteur global de manière synchronisée
+**Clients**
+- Connexion via `InetAddress` et `InetSocketAddress`
+- Tests avec clients Java et Telnet (Activité 3-1)
+- Multiples machines connectées simultanément
 
-La classe Operation :
+### Scénarios de test
 
-Implémente Serializable pour la transmission via sockets
-Encapsule les deux opérandes (op1, op2) et l'opérateur
-Getters pour accéder aux attributs
+| Test | Description | Résultat |
+|------|-------------|----------|
+| Connexions multiples | 5+ clients simultanés | ✅ Succès |
+| Indépendance des sessions | Échanges parallèles | ✅ Succès |
+| Synchronisation | Compteur global cohérent | ✅ Succès |
+| Gestion d'erreurs | Division par zéro, opérateur invalide | ✅ Succès |
+| Fermeture propre | Commande `quit` | ✅ Succès |
 
-La classe CalculatorClient :
+---
 
-Se connecte au serveur via socket sur le port 6000
-Interface interactive pour saisir des opérations
-Crée des objets Operation et les envoie au serveur
-Reçoit et affiche les résultats ou messages d'erreur
-Permet de faire plusieurs opérations dans la même session
+## ✨ Fonctionnalités principales
 
-Étape 3 – Gestion d'un accès concurrent
+### Activité 3-1 : Serveur de messagerie
 
-Compteur global synchronisé :
+- [x] Gestion multi-clients concurrente
+- [x] Communication bidirectionnelle TCP
+- [x] Identification automatique des clients
+- [x] Messages personnalisés (bienvenue, écho)
+- [x] Fermeture propre des connexions
+- [x] Compatibilité Telnet et Java
 
-Variable partagée totalOperations indiquant le nombre total d'opérations traitées
-Ressource critique partagée entre tous les threads CalculatorClientHandler
-Méthode synchronized incrementOperationCount() pour éviter les conflits d'accès concurrent
-À chaque opération calculée :
+### Activité 3-2 : Service de calculatrice
 
-Le compteur global est incrémenté
-Sa nouvelle valeur est affichée dans la console du serveur
+- [x] Architecture multi-threads
+- [x] Sérialisation d'objets Java
+- [x] 4 opérations arithmétiques (`+`, `-`, `*`, `/`)
+- [x] Compteur synchronisé global
+- [x] Gestion robuste des erreurs
+- [x] Sessions multi-opérations
+- [x] Protection contre les race conditions
+- [x] Tests réussis en environnement distribué
 
+---
 
+## 🚀 Utilisation
 
-Tests de synchronisation :
+### Démarrage du serveur (Activité 3-1)
+```bash
+java MultiThreadServer
+# Serveur en écoute sur le port 1234
+```
 
-Tests avec 5 clients en parallèle effectuant plusieurs opérations
-Vérification de la cohérence du compteur (aucune perte d'incrémentation)
-Tests sur plusieurs machines du même réseau
+### Connexion d'un client
+```bash
+# Avec Telnet
+telnet localhost 1234
 
-Étape 4 – Tests en réseau
+# Avec le client Java
+java Client
+```
 
-Les tests ont été effectués :
-En local (localhost) avec plusieurs clients Java simultanés
-En réseau local (LAN) entre plusieurs machines :
+### Démarrage du serveur calculatrice (Activité 3-2)
+```bash
+java MultiThreadCalculatorServer
+# Serveur en écoute sur le port 6000
+```
 
-Serveur sur une machine (IP notée)
-Clients sur d'autres machines du réseau
-Communication bidirectionnelle par objets sérialisés réussie
-Compteur global synchronisé et cohérent sur toutes les machines
+### Utilisation du client calculatrice
+```bash
+java CalculatorClient
+# Suivre les instructions pour saisir les opérations
+```
 
+---
 
-🛠️ Fonctionnalités clés
+## 📊 Résultats attendus
 
-Activité 3-1
+### Activité 3-1
+```
+[SERVEUR] Serveur démarré sur le port 1234
+[SERVEUR] Client #1 connecté : 192.168.1.15
+[SERVEUR] Client #2 connecté : 192.168.1.20
+[Client #1] Message reçu : Hello
+[Client #2] Message reçu : Bonjour
+```
 
-✅ Serveur multi-threads gérant plusieurs clients simultanément
-✅ Communication bidirectionnelle basée sur TCP
-✅ Identification et numérotation automatique des clients connectés
-✅ Messages de bienvenue et d'écho personnalisés pour chaque client
-✅ Gestion correcte de la fermeture des connexions et des flux
-✅ Compatibilité avec les clients Telnet et Java
+### Activité 3-2
+```
+[SERVEUR] Calculatrice démarrée sur 192.168.1.10:6000
+[SERVEUR] Client #1 connecté : 192.168.1.15
+[SERVEUR] Opération reçue : 10.0 + 5.0 = 15.0
+[SERVEUR] Total opérations : 1
+[SERVEUR] Client #2 connecté : 192.168.1.20
+[SERVEUR] Opération reçue : 20.0 / 4.0 = 5.0
+[SERVEUR] Total opérations : 2
+```
 
-Activité 3-2
+---
 
-✅ Serveur multi-threads pour service de calculatrice
-✅ Communication par objets sérialisés (Operation)
-✅ Traitement des 4 opérations arithmétiques : +, -, *, /
-✅ Compteur global synchronisé des opérations
-✅ Gestion des erreurs : division par zéro, opérateur invalide
-✅ Interface client interactive permettant plusieurs opérations
-✅ Synchronisation correcte pour éviter les race conditions
-✅ Tests réussis en réseau local avec plusieurs machines
+## 🎓 Concepts clés illustrés
 
-📈 Résultats attendus
+- **Concurrence** : Exécution simultanée de plusieurs threads
+- **Synchronisation** : Méthodes `synchronized` pour l'exclusion mutuelle
+- **Sockets TCP** : Communication fiable orientée connexion
+- **Sérialisation** : Transmission d'objets Java sur le réseau
+- **Gestion des ressources** : Fermeture propre des flux et sockets
+- **Architecture distribuée** : Communication inter-processus
 
-Activité 3-1
+---
 
-Le serveur affiche la liste des clients connectés (adresse + numéro)
-Chaque client reçoit un message personnalisé à sa connexion
-Les échanges s'effectuent sans blocage, même avec plusieurs clients connectés simultanément
-Les connexions et déconnexions sont correctement gérées
+## 📚 Compétences développées
 
-Activité 3-2
+- Programmation réseau en Java
+- Gestion de la concurrence et synchronisation
+- Debugging d'applications distribuées
+- Configuration réseau et pare-feu
+- Tests d'intégration multi-machines
+- Conception d'architectures Client/Serveur robustes
 
-Le serveur affiche son adresse IP et le port 6000 au démarrage
-Chaque client connecté est identifié avec son numéro et son adresse
-Les opérations reçues et les résultats calculés sont affichés côté serveur
-Le compteur global est affiché après chaque opération et reste cohérent
-Les 4 opérations arithmétiques fonctionnent correctement
-Les erreurs (division par zéro, opérateur invalide) sont gérées avec des messages appropriés
-Le client peut effectuer plusieurs opérations dans la même session
-Plusieurs clients peuvent travailler simultanément sans conflit
-Le compteur global ne perd aucune incrémentation (pas de race condition)
+---
+
+## 🔗 Ressources complémentaires
+
+- [Documentation Java Sockets](https://docs.oracle.com/javase/tutorial/networking/sockets/)
+- [Java Concurrency](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
+- [Serialization Guide](https://docs.oracle.com/javase/tutorial/jndi/objects/serial.html)
+
+---
+
+## 📝 Licence
+
+Projet académique réalisé dans le cadre du cours DAR2025 - Faculté des Sciences de Sfax
+
+---
+
+**Dernière mise à jour** : Novembre 2025
