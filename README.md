@@ -1,10 +1,10 @@
-# 🌐 TP3-DAR2025 – Serveur Multi-threads : Sockets TCP
+#  TP3-DAR2025 – Serveur Multi-threads : Sockets TCP
 
 > Implémentation d'un serveur multi-threads Java avec gestion de connexions concurrentes et service de calculatrice distribué
 
 ---
 
-## 📋 Informations du projet
+##  Informations du projet
 
 | Élément | Détail |
 |---------|--------|
@@ -16,7 +16,7 @@
 
 ---
 
-## 🎯 Objectifs pédagogiques
+##  Objectifs pédagogiques
 
 Ce projet vise à maîtriser les concepts avancés de programmation réseau et concurrente en Java :
 
@@ -28,13 +28,13 @@ Ce projet vise à maîtriser les concepts avancés de programmation réseau et c
 
 ### Extension du modèle Client/Serveur
 
-- ✅ Support de connexions multiples en parallèle
-- ✅ Service de calculatrice avec objets sérialisés
-- ✅ Gestion d'accès concurrent avec synchronisation
+-  Support de connexions multiples en parallèle
+-  Service de calculatrice avec objets sérialisés
+-  Gestion d'accès concurrent avec synchronisation
 
 ---
 
-## 🛠️ Environnement technique
+##  Environnement technique
 
 ```
 Langage       : Java
@@ -46,7 +46,7 @@ Test réseau   : Telnet (Activité 3-1)
 
 ---
 
-## 📂 Structure du projet
+##  Structure du projet
 
 ### Activité 3-1 : Serveur Multi-threads de base
 
@@ -101,7 +101,7 @@ class Operation {
 
 ---
 
-## 🔒 Gestion de la synchronisation
+##  Gestion de la synchronisation
 
 ### Problématique
 Plusieurs threads accèdent simultanément à une ressource partagée (`totalOperations`), créant un risque de **race condition**.
@@ -117,13 +117,13 @@ private synchronized void incrementOperationCount() {
 ```
 
 ### Tests de validation
-- ✅ 5 clients simultanés effectuant plusieurs opérations
-- ✅ Cohérence parfaite du compteur (aucune perte)
-- ✅ Tests en réseau local multi-machines
+-  5 clients simultanés effectuant plusieurs opérations
+-  Cohérence parfaite du compteur (aucune perte)
+-  Tests en réseau local multi-machines
 
 ---
 
-## 🧪 Tests et validation
+##  Tests et validation
 
 ### Configuration réseau locale (LAN)
 
@@ -141,15 +141,15 @@ private synchronized void incrementOperationCount() {
 
 | Test | Description | Résultat |
 |------|-------------|----------|
-| Connexions multiples | 5+ clients simultanés | ✅ Succès |
-| Indépendance des sessions | Échanges parallèles | ✅ Succès |
-| Synchronisation | Compteur global cohérent | ✅ Succès |
-| Gestion d'erreurs | Division par zéro, opérateur invalide | ✅ Succès |
-| Fermeture propre | Commande `quit` | ✅ Succès |
+| Connexions multiples | 5+ clients simultanés |  Succès |
+| Indépendance des sessions | Échanges parallèles |  Succès |
+| Synchronisation | Compteur global cohérent |  Succès |
+| Gestion d'erreurs | Division par zéro, opérateur invalide |  Succès |
+| Fermeture propre | Commande `quit` |  Succès |
 
 ---
 
-## ✨ Fonctionnalités principales
+##  Fonctionnalités principales
 
 ### Activité 3-1 : Serveur de messagerie
 
@@ -173,7 +173,7 @@ private synchronized void incrementOperationCount() {
 
 ---
 
-## 🚀 Utilisation
+##  Utilisation
 
 ### Démarrage du serveur (Activité 3-1)
 ```bash
@@ -204,7 +204,7 @@ java CalculatorClient
 
 ---
 
-## 📊 Résultats attendus
+##  Résultats attendus
 
 ### Activité 3-1
 ```
@@ -228,7 +228,7 @@ java CalculatorClient
 
 ---
 
-## 🎓 Concepts clés illustrés
+##  Concepts clés illustrés
 
 - **Concurrence** : Exécution simultanée de plusieurs threads
 - **Synchronisation** : Méthodes `synchronized` pour l'exclusion mutuelle
@@ -239,7 +239,7 @@ java CalculatorClient
 
 ---
 
-## 📚 Compétences développées
+##  Compétences développées
 
 - Programmation réseau en Java
 - Gestion de la concurrence et synchronisation
@@ -250,7 +250,7 @@ java CalculatorClient
 
 ---
 
-## 🔗 Ressources complémentaires
+##  Ressources complémentaires
 
 - [Documentation Java Sockets](https://docs.oracle.com/javase/tutorial/networking/sockets/)
 - [Java Concurrency](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
@@ -258,7 +258,7 @@ java CalculatorClient
 
 ---
 
-## 📝 Licence
+##  Licence
 
 Projet académique réalisé dans le cadre du cours DAR2025 - Faculté des Sciences de Sfax
 
